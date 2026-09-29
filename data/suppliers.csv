@@ -1,0 +1,55 @@
+item_id,supplier_name,unit_cost,lead_time_days,moq_units,availability_pct
+1000,Reinhart FoodService,1.83,2,21,0.942
+1001,Gordon Fresh Co.,0.75,2,12,0.973
+1002,Sysco Regional,2.14,1,21,0.961
+1003,Reinhart FoodService,1.26,2,27,0.94
+1004,Reinhart FoodService,1.87,2,10,0.994
+1005,Local Farm Collective,1.28,1,23,0.995
+1006,Gordon Fresh Co.,0.71,2,23,0.926
+1007,Reinhart FoodService,1.51,2,25,0.991
+1008,Sysco Regional,7.21,3,8,0.973
+1009,Local Farm Collective,6.52,2,14,0.999
+1010,Reinhart FoodService,2.56,2,7,0.934
+1011,US Foods Direct,6.51,1,19,0.974
+1012,US Foods Direct,4.6,3,14,0.963
+1013,US Foods Direct,5.09,1,11,0.927
+1014,Sysco Regional,2.33,2,17,0.956
+1015,Sysco Regional,3.62,1,9,0.984
+1016,Gordon Fresh Co.,2.94,1,15,0.927
+1017,Gordon Fresh Co.,3.43,2,11,0.97
+1018,Sysco Regional,5.74,1,7,0.99
+1019,Gordon Fresh Co.,4.83,2,11,0.977
+1020,Local Farm Collective,8.91,1,15,0.992
+1021,US Foods Direct,10.53,1,8,0.941
+1022,US Foods Direct,2.56,2,13,0.923
+1023,Reinhart FoodService,1.45,3,10,0.988
+1024,Gordon Fresh Co.,2.54,2,11,0.928
+1025,Sysco Regional,2.59,2,25,0.976
+1026,US Foods Direct,2.08,2,20,0.982
+1027,US Foods Direct,2.1,1,20,0.964
+1028,US Foods Direct,2.66,1,25,0.995
+1029,Reinhart FoodService,0.97,1,12,0.973
+1030,Sysco Regional,2.48,2,11,0.99
+1031,Reinhart FoodService,2.44,1,12,0.927
+1032,Local Farm Collective,2.88,2,11,0.978
+1033,Reinhart FoodService,1.78,3,6,0.929
+1034,Local Farm Collective,2.21,4,14,0.946
+1035,Reinhart FoodService,3.04,4,52,0.925
+1036,Sysco Regional,3.03,5,66,0.958
+1037,US Foods Direct,2.15,7,62,0.986
+1038,Sysco Regional,1.03,5,69,0.998
+1039,US Foods Direct,5.69,3,54,0.943
+1040,Local Farm Collective,1.67,7,48,0.953
+1041,Gordon Fresh Co.,4.43,5,26,0.945
+1042,Gordon Fresh Co.,1.98,6,56,0.936
+1043,Gordon Fresh Co.,5.09,3,29,0.921
+1044,Sysco Regional,2.11,7,41,0.968
+1045,US Foods Direct,1.53,6,48,0.973
+1046,US Foods Direct,3.54,6,29,0.944
+1047,US Foods Direct,4.72,7,80,0.985
+1048,Gordon Fresh Co.,1.17,5,34,0.946
+1049,Local Farm Collective,1.02,3,51,0.963
+1050,Reinhart FoodService,1.61,7,26,0.953
+1051,US Foods Direct,4.26,7,55,0.967
+1052,Sysco Regional,3.58,6,58,0.924
+1053,Local Farm Collective,4.4,7,39,0.959
