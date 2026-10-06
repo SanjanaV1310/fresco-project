@@ -80,4 +80,4 @@ Structure — see the `TODO (Week N)` comment at the top of each agent's
 ## Team split (see Requirements Statement, Section 1.4)
 
 - **Sanjana** — Demand, Inventory, Supplier Agents (input/forecasting side)
-- **[Teammate]** — Optimization, Critic, Orchestrator Agents (decision side)
+- **Akila** — Optimization, Critic, Orchestrator Agents (decision side)
