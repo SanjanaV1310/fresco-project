@@ -1,6 +1,6 @@
 # FRESCO — Multi-Agent Inventory & Waste Reduction System
 
-CAP 6942 Capstone Project — Sanjana Vijayabhaskar & [Teammate Name]
+CAP 6942 Capstone Project — Sanjana Vijayabhaskar & Akila Kumar
 
 ## What this is
 
