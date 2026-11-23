@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRESCO Demo</title>
+<style>
+:root{--bg:#fcfcfb;--card:#fff;--ink:#2b2a28;--mute:#6b6a65;--line:#e3e2de;--blue:#2a78d6;--orange:#eb6834;--green:#2f8f5b;--amber:#b7791f;--red:#c0392b;--chip:#f1f0ed}
+@media(prefers-color-scheme:dark){:root{--bg:#1b1b1a;--card:#242423;--ink:#ecebe8;--mute:#a3a29c;--line:#383836;--blue:#5aa0f0;--orange:#f08a5d;--green:#5cc08a;--amber:#e0b050;--red:#e8786b;--chip:#2e2e2c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,Roboto,sans-serif}
+header{padding:18px 24px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+h1{font-size:22px;margin:0}header span{color:var(--mute)}
+nav{display:flex;gap:4px;padding:12px 24px 0;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;padding:9px 16px;font:inherit;color:var(--mute);cursor:pointer;border-bottom:3px solid transparent}
+nav button.on{color:var(--ink);border-color:var(--blue);font-weight:600}
+main{padding:20px 24px;max-width:1400px;margin:auto}
+.tab{display:none}.tab.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi b{display:block;font-size:24px}.kpi small{color:var(--mute)}
+.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+select,input,button.btn{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+button.btn{cursor:pointer}button.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
+.split{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:1000px){.split{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}th{color:var(--mute);font-weight:500;position:sticky;top:0;background:var(--card)}
+tbody tr{cursor:pointer}tbody tr:hover,tbody tr.sel{background:var(--chip)}
+.scroll{max-height:620px;overflow:auto}
+.badge{padding:2px 8px;border-radius:99px;font-size:12px;background:var(--chip);white-space:nowrap}
+.b-approved{color:var(--green)}.b-approved_with_warnings{color:var(--amber)}.b-approved_after_revision{color:var(--blue)}.b-needs_human_review{color:var(--red)}
+.ag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:5px;margin-bottom:3px;color:#fff}
+.ag.supplier{background:#7a6a4f}.ag.inventory{background:#5b7f6b}.ag.demand{background:#2a78d6}.ag.optimization{background:#8a5bd6}.ag.critic{background:#eb6834}.ag.budget{background:#888}
+.step{margin:0 0 12px;font-size:14px}
+.chips span{display:inline-block;background:var(--chip);border-radius:99px;padding:2px 10px;margin:2px 4px 2px 0;font-size:13px}
+.muted{color:var(--mute)}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card h3{margin:0 0 10px;font-size:16px}label{display:block;font-size:13px;color:var(--mute);margin:8px 0 3px}
+.log{border-left:3px solid var(--blue);padding:4px 12px;margin:10px 0}
+.err{color:var(--red);margin:8px 0}img{max-width:100%;border-radius:10px;border:1px solid var(--line)}
+.up{color:var(--green)}.down{color:var(--red)}
+</style></head><body>
+<header><h1>FRESCO</h1><span>Multi-Agent Inventory &amp; Waste Reduction · planning for <b id="dd"></b> · history up to <span id="asof"></span></span></header>
+<nav><button class="on" data-t="plan">Weekly plan</button><button data-t="what">What-if / replan</button><button data-t="res">Results</button><button data-t="how">How it works</button></nav>
+<main>
+<section id="plan" class="tab on">
+ <div class="kpis" id="kpis"></div>
+ <div class="bar">
+  <label style="margin:0">Ordering</label>
+  <select id="cycle"><option value="7">Weekly (SOW)</option><option value="3">Twice-weekly (Mon + Thu)</option></select>
+  <label style="margin:0">Weekly budget $</label><input id="budget" type="number" placeholder="no limit" style="width:120px">
+  <button class="btn pri" id="apply">Plan again</button><button class="btn" id="reset">Reset demo</button>
+  <select id="fam"><option value="">All categories</option></select><input id="q" placeholder="Search item…">
+  <span class="err" id="err"></span>
+ </div>
+ <div class="split">
+  <div class="card scroll"><table><thead><tr><th>Item</th><th>Category</th><th>Stock</th><th>Window demand</th><th>Order</th><th>Cost</th><th>Served</th><th>Critic</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="card" id="detail"><span class="muted">Click an item to see what each agent said and why.</span></div>
+ </div>
+</section>
+<section id="what" class="tab">
+ <p class="muted">News arrives after the plan is made. Only the steps it affects are re-run; the log shows which.</p>
+ <div class="grid3">
+  <div class="card"><h3>Supplier changed terms</h3><label>Item</label><select class="items" id="s_item"></select>
+   <label>Minimum order (units)</label><input id="s_moq" type="number"><label>Unit cost ($)</label><input id="s_cost" type="number" step="0.01"><label>Lead time (days)</label><input id="s_lead" type="number">
+   <p><button class="btn pri" id="s_go">Replan</button></p></div>
+  <div class="card"><h3>Stock count disagrees</h3><label>Item</label><select class="items" id="c_item"></select>
+   <label>Units actually on the shelf</label><input id="c_n" type="number" value="0"><p><button class="btn pri" id="c_go">Replan</button></p></div>
+  <div class="card"><h3>Budget cut</h3><label>New weekly budget ($)</label><input id="b_n" type="number" value="12000"><p><button class="btn pri" id="b_go">Replan</button></p></div>
+ </div>
+ <h3>Replan log</h3><div id="log" class="muted">Nothing yet.</div>
+</section>
+<section id="res" class="tab">
+ <p>The plan above, replayed over 32 real weeks against two baseline rules (last 15 weeks shown). Same demand and supplier luck for every policy.</p>
+ <div id="restab"></div><p><img src="/system_evaluation.png" alt="Evaluation chart"></p>
+ <p class="muted">Synthetic data. Weekly ordering cannot serve short-shelf-life items well for any policy; twice-weekly ordering is an extension of the SOW. Full report: reports/system_evaluation.md</p>
+</section>
+<section id="how" class="tab"><div class="card" style="max-width:820px">
+ <h3>The pipeline</h3>
+ <p><span class="ag supplier">Supplier</span> terms, lead time, minimum order · <span class="ag inventory">Inventory</span> batches, expiry · <span class="ag demand">Demand</span> forecast with an 80% range</p>
+ <p>→ <span class="ag optimization">Optimization</span> how many units, given shelf life, minimum order, supplier shortfalls and budget → <span class="ag critic">Critic</span> approve, or object with a specific bound → back to Optimization (replan loop, max 3 tries) → final order plan.</p>
+ <p>The Orchestrator coordinates everything; agents never call each other. Any new information re-runs only the affected steps.</p></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const money=x=>(x<0?'-$':'$')+Math.abs(x).toLocaleString(undefined,{maximumFractionDigits:0}), pct=x=>(x*100).toFixed(1)+'%';
+const LABEL={approved:'Approved',approved_with_warnings:'Approved + warnings',approved_after_revision:'Revised, approved',needs_human_review:'Needs human'};
+let D=null,sel=null;
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,.tab').forEach(e=>e.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on')});
+async function api(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:undefined);const j=await r.json();if(j.error){$('#err').textContent=j.error;throw new Error(j.error)}$('#err').textContent='';return j}
+function load(d){D=d;$('#dd').textContent=d.decision_date;$('#asof').textContent=d.as_of;$('#cycle').value=d.cycle;$('#budget').value=d.budget||'';
+ const s=d.summary;$('#kpis').innerHTML=[[s.items_ordered+' / '+s.items_planned,'items ordered'],[s.total_units.toLocaleString(),'units'],[money(s.total_cost),d.budget?'cost (budget '+money(d.budget)+')':'total cost'],[s.approved_first_pass,'approved first pass'],[s.approved_after_revision,'revised then approved'],[s.needs_human_review,'need a human']].map(k=>`<div class="kpi"><b>${k[0]}</b><small>${k[1]}</small></div>`).join('');
+ const fams=[...new Set(d.items.map(i=>i.family))],cur=$('#fam').value;$('#fam').innerHTML='<option value="">All categories</option>'+fams.map(f=>`<option ${f==cur?'selected':''}>${f}</option>`).join('');
+ const opts=d.items.map(i=>`<option value="${i.item_id}">${esc(i.name)}</option>`).join('');document.querySelectorAll('.items').forEach(s=>{const v=s.value;s.innerHTML=opts;if(v)s.value=v});fillSupplier();
+ rows();if(sel!=null)show(sel);renderLog()}
+function rows(){const f=$('#fam').value,q=$('#q').value.toLowerCase();$('#rows').innerHTML=D.items.filter(i=>(!f||i.family==f)&&i.name.toLowerCase().includes(q)).map(i=>`<tr data-id="${i.item_id}" class="${i.item_id==sel?'sel':''}"><td>${esc(i.name)}</td><td>${i.family}</td><td>${i.stock}</td><td>${i.forecast.toFixed(0)}</td><td><b>${i.order}</b></td><td>${money(i.cost)}</td><td>${pct(i.service)}</td><td><span class="badge b-${i.status}">${LABEL[i.status]}</span></td></tr>`).join('');
+ document.querySelectorAll('#rows tr').forEach(r=>r.onclick=()=>{sel=+r.dataset.id;rows();show(sel)})}
+function spark(i){const w=360,h=90,m=Math.max(...i.daily.map(d=>d.upper??d.units),1);const bw=w/i.daily.length;return `<svg viewBox="0 0 ${w} ${h+16}" width="100%">${i.daily.map((d,k)=>{const y=h-d.units/m*h,x=k*bw+2;return `<rect x="${x}" y="${y}" width="${bw-4}" height="${h-y}" fill="var(--blue)" rx="2"/>`+(d.upper!=null?`<line x1="${x+bw/2-2}" x2="${x+bw/2-2}" y1="${h-d.upper/m*h}" y2="${h-d.lower/m*h}" stroke="var(--ink)" stroke-width="1.5"/>`:'')}).join('')}<text x="0" y="${h+13}" font-size="10" fill="var(--mute)">${i.daily[0].date} → ${i.daily.at(-1).date}  (bars: forecast/day, lines: 80% range)</text></svg>`}
+function show(id){const i=D.items.find(x=>x.item_id==id);if(!i)return;$('#detail').innerHTML=`<h3 style="margin:0">${esc(i.name)} <span class="badge b-${i.status}">${LABEL[i.status]}</span></h3>
+ <p class="muted" style="margin:4px 0 10px">Order <b>${i.order}</b> units · arrives in ${i.lead_time} d · min order ${i.moq} · $${i.unit_cost}/unit · shelf life ${i.shelf} d · on hand ${i.stock}</p>
+ ${i.binding.length?`<div class="chips">${i.binding.map(b=>`<span>${b.replace(/_/g,' ')}</span>`).join('')}</div>`:''}${spark(i)}
+ ${i.trace.map(t=>`<div class="step"><span class="ag ${t.agent}">${t.agent}${t.round?' · round '+t.round:''}</span><br>${esc(t.summary)}</div>`).join('')}`}
+function fillSupplier(){const id=+$('#s_item').value,i=D&&D.items.find(x=>x.item_id==id);if(i){$('#s_moq').value=i.moq;$('#s_cost').value=i.unit_cost;$('#s_lead').value=i.lead_time}}
+function renderLog(){const L=D.replan_log;$('#log').innerHTML=L.length?L.slice().reverse().map(l=>`<div class="log"><b>${l.trigger.replace('_',' ')}</b>: ${esc(l.detail)}<div class="chips">${l.steps_rerun.map(s=>`<span>${s}</span>`).join('')}</div>
+ ${l.orders_changed.slice(0,8).map(c=>{const n=D.items.find(i=>i.item_id==c.item_id).name;return `<div>${esc(n)}: ${c.before} → <b>${c.after}</b> units</div>`}).join('')}${l.orders_changed.length>8?`<div class="muted">… and ${l.orders_changed.length-8} more</div>`:''}${l.orders_changed.length?'':'<div class="muted">No order changed.</div>'}
+ <div class="muted">Basket ${money(l.cost_before)} → ${money(l.cost_after)}</div></div>`).join(''):'Nothing yet.'}
+$('#fam').onchange=rows;$('#q').oninput=rows;$('#s_item').onchange=fillSupplier;
+$('#apply').onclick=async()=>load(await api('/api/plan',{cycle:+$('#cycle').value,budget:+$('#budget').value||null}));
+$('#reset').onclick=async()=>{sel=null;$('#detail').innerHTML='<span class="muted">Click an item to see what each agent said and why.</span>';load(await api('/api/reset',{}))};
+async function replan(b,tab){load(await api('/api/replan',b))}
+$('#s_go').onclick=()=>replan({type:'supplier_update',item_id:+$('#s_item').value,changes:{moq_units:+$('#s_moq').value,unit_cost:+$('#s_cost').value,lead_time_days:+$('#s_lead').value},reason:'changed in the demo'});
+$('#c_go').onclick=()=>replan({type:'stock_correction',item_id:+$('#c_item').value,count:+$('#c_n').value});
+$('#b_go').onclick=()=>replan({type:'budget_change',budget:+$('#b_n').value});
+(async()=>{load(await api('/api/plan'));
+ const E=await api('/api/evaluation'),names={sow:'SOW reorder-point rule',strong:'Order-up-to rule',fresco:'FRESCO'};
+ $('#restab').innerHTML='<div class="grid3">'+Object.entries(E.cadences).map(([c,v])=>`<div class="card"><h3>${c=='weekly'?'Weekly ordering (SOW)':'Twice-weekly ordering'}</h3><table><thead><tr><th>Policy</th><th>Served</th><th>Waste</th><th>Margin</th></tr></thead><tbody>${['sow','strong','fresco'].map(k=>{const s=v.summary[k].holdout;return `<tr style="cursor:default"><td>${names[k]}</td><td>${pct(s.fill_rate)}</td><td>${pct(s.waste_rate)}</td><td>${money(s.margin_after_waste)}</td></tr>`}).join('')}</tbody></table></div>`).join('')+'</div>'})();
+</script></body></html>

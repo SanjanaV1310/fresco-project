@@ -1,0 +1,13 @@
+model,split,wape,mae,rmse,bias_pct,weekly_wape
+trailing_mean_7,all,0.3134,6.2723,9.1013,0.0073,0.1462
+trailing_mean_7,first_half,0.318,6.4122,9.3405,0.0173,0.1506
+trailing_mean_7,second_half,0.3087,6.1324,8.8556,-0.0027,0.1417
+seasonal_naive_4w,all,0.2873,5.7489,8.6119,-0.0071,0.1218
+seasonal_naive_4w,first_half,0.295,5.9472,8.9327,0.0149,0.1298
+seasonal_naive_4w,second_half,0.2794,5.5505,8.2786,-0.0295,0.1136
+weekday_level,all,0.261,5.2226,7.8755,0.0203,0.1177
+weekday_level,first_half,0.2692,5.427,8.2629,0.0438,0.1291
+weekday_level,second_half,0.2526,5.0182,7.4681,-0.0035,0.1062
+holt_winters,all,0.2594,5.1906,7.8258,0.0227,0.1142
+holt_winters,first_half,0.2667,5.3775,8.1831,0.0468,0.1237
+holt_winters,second_half,0.2519,5.0037,7.4513,-0.0018,0.1047
